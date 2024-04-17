@@ -22,6 +22,7 @@ import useNotifier from '@/utils/useNotifier'
 
 // Const
 import { enqueueSnackbar as enqueueSnackbarAction, closeSnackbar as closeSnackbarAction } from '@/store/actions'
+import { browserName } from 'react-device-detect'
 
 export const ChatPopUp = ({ chatflowid }) => {
     const theme = useTheme()
@@ -127,6 +128,8 @@ export const ChatPopUp = ({ chatflowid }) => {
             anchorRef.current.focus()
         }
         prevOpen.current = open
+
+        alert(browserName)
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, chatflowid])
