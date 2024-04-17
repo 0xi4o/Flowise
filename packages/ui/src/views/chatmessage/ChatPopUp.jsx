@@ -129,8 +129,6 @@ export const ChatPopUp = ({ chatflowid }) => {
         }
         prevOpen.current = open
 
-        alert(browserName)
-
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [open, chatflowid])
 

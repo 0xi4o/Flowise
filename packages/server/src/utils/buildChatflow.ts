@@ -74,6 +74,8 @@ export const utilBuildChatflow = async (req: Request, socketIO?: Server, isInter
             for (let i = 0; i < fileUploads.length; i += 1) {
                 const upload = fileUploads[i]
 
+                logger.info(`[server]: upload type: ${upload.type}`)
+
                 if ((upload.type === 'file' || upload.type === 'audio') && upload.data) {
                     const filename = upload.name
                     const dir = path.join(getStoragePath(), chatflowid, chatId)
