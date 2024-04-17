@@ -75,6 +75,8 @@ export const utilBuildChatflow = async (req: Request, socketIO?: Server, isInter
                 const upload = fileUploads[i]
 
                 logger.info(`[server]: upload type: ${upload.type}`)
+                logger.info(`[server]: upload name: ${upload.name}`)
+                logger.info(`[server]: upload mime: ${upload.mime}`)
 
                 if ((upload.type === 'file' || upload.type === 'audio') && upload.data) {
                     const filename = upload.name
@@ -91,8 +93,6 @@ export const utilBuildChatflow = async (req: Request, socketIO?: Server, isInter
                     upload.type = 'stored-file'
                     fileUploads[i] = omit(upload, ['data'])
                 }
-
-                logger.info(`[server]: upload mime: ${upload.mime}`)
 
                 // Run Speech to Text conversion
                 if (upload.mime === 'audio/webm' || upload.mime === 'audio/mp4') {
