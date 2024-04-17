@@ -90,6 +90,8 @@ export const utilBuildChatflow = async (req: Request, socketIO?: Server, isInter
                     fileUploads[i] = omit(upload, ['data'])
                 }
 
+                logger.info(`[server]: upload mime: ${upload.mime}`)
+
                 // Run Speech to Text conversion
                 if (upload.mime === 'audio/webm' || upload.mime === 'audio/mp4') {
                     let speechToTextConfig: ICommonObject = {}
@@ -116,9 +118,9 @@ export const utilBuildChatflow = async (req: Request, socketIO?: Server, isInter
                             incomingInput.question = speechToTextResult
                         }
                     }
-
-                    logger.info(`[server]: Speech to text result: ${incomingInput.question}`)
                 }
+
+                logger.info(`[server]: Speech to text result: ${incomingInput.question}`)
             }
         }
 
