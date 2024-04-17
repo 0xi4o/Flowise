@@ -116,6 +116,8 @@ export const utilBuildChatflow = async (req: Request, socketIO?: Server, isInter
                             incomingInput.question = speechToTextResult
                         }
                     }
+
+                    logger.info(`[server]: Speech to text result: ${incomingInput.question}`)
                 }
             }
         }
