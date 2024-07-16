@@ -66,6 +66,7 @@
         "express": "^4.17.3",
         "express-basic-auth": "^1.2.1",
         "express-rate-limit": "^6.9.0",
+        "express-validator": "^7.1.0",
         "flowise-components": "workspace:^",
         "flowise-ui": "workspace:^",
         "http-errors": "^2.0.0",

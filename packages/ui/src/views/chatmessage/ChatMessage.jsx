@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import axios from 'axios'
 import { v4 as uuidv4 } from 'uuid'
+import DOMPurify from 'dompurify'
 
 import {
     Box,
@@ -94,6 +95,7 @@ export const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, preview
     const enqueueSnackbar = (...args) => dispatch(enqueueSnackbarAction(...args))
     const closeSnackbar = (...args) => dispatch(closeSnackbarAction(...args))
 
+    const [error, setError] = useState('')
     const [userInput, setUserInput] = useState('')
     const [loading, setLoading] = useState(false)
     const [messages, setMessages] = useState([
@@ -383,7 +385,24 @@ export const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, preview
         }
     }
 
-    const onChange = useCallback((e) => setUserInput(e.target.value), [setUserInput])
+    const detectHTML = (input) => {
+        // Use DOMPurify to check for more complex cases
+        const clean = DOMPurify.sanitize(input)
+        return clean !== input
+    }
+
+    const onChange = useCallback(
+        (e) => {
+            const rawValue = e.target.value
+            setUserInput(rawValue)
+            if (detectHTML(rawValue)) {
+                setError('HTML or potentially unsafe content is is not allowed in this input field.')
+            } else {
+                setError('')
+            }
+        },
+        [setUserInput]
+    )
 
     const updateLastMessage = (text) => {
         setMessages((prevMessages) => {
@@ -491,6 +510,13 @@ export const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, preview
     // Handle form submission
     const handleSubmit = async (e, promptStarterInput) => {
         if (e) e.preventDefault()
+
+        if (detectHTML(userInput)) {
+            setError('HTML or potentially unsafe content is is not allowed in this input field.')
+            return
+        } else {
+            setError('')
+        }
 
         if (!promptStarterInput && userInput.trim() === '') {
             const containsAudio = previews.filter((item) => item.type === 'audio').length > 0
@@ -1483,6 +1509,11 @@ export const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, preview
                         ))}
                     </Box>
                 )}
+                {error && (
+                    <Typography sx={{ color: 'red', mb: 2 }} variant='body1'>
+                        {error}
+                    </Typography>
+                )}
                 {isRecording ? (
                     <>
                         {recordingNotSupported ? (
@@ -1604,7 +1635,7 @@ export const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, preview
                                         <InputAdornment position='end' sx={{ padding: '15px' }}>
                                             <IconButton
                                                 type='submit'
-                                                disabled={loading || !chatflowid || (leadsConfig?.status && !isLeadSaved)}
+                                                disabled={!error && (loading || !chatflowid || (leadsConfig?.status && !isLeadSaved))}
                                                 edge='end'
                                             >
                                                 {loading ? (
@@ -1632,12 +1663,14 @@ export const ChatMessage = ({ open, chatflowid, isAgentCanvas, isDialog, preview
                                                 <InputAdornment position='end' sx={{ padding: '15px' }}>
                                                     <IconButton
                                                         type='submit'
-                                                        disabled={loading || !chatflowid || (leadsConfig?.status && !isLeadSaved)}
+                                                        disabled={
+                                                            !error && (loading || !chatflowid || (leadsConfig?.status && !isLeadSaved))
+                                                        }
                                                         edge='end'
                                                     >
                                                         <IconSend
                                                             color={
-                                                                loading || !chatflowid || (leadsConfig?.status && !isLeadSaved)
+                                                                !error && (loading || !chatflowid || (leadsConfig?.status && !isLeadSaved))
                                                                     ? '#9e9e9e'
                                                                     : customization.isDarkMode
                                                                     ? 'white'
